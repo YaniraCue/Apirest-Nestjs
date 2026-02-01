@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Sanitario {
+  id           Int            @id @default(autoincrement())
+  nombre       String
+  especialidad String
+
+  citas        SanitarioCita[]
+}
+
+model Paciente {
+  id           Int         @id @default(autoincrement())
+  nombre       String
+  antecedentes String
+
+  citas        Cita[]
+}
+
+model Cita {
+  id         Int              @id @default(autoincrement())
+  fechaHora  String
+  sintomas   String
+
+  pacienteId Int
+  paciente   Paciente         @relation(fields: [pacienteId], references: [id])
+
+  sanitarios SanitarioCita[]
+}
+
+model SanitarioCita {
+  sanitarioId Int
+  citaId      Int
+
+  sanitario   Sanitario @relation(fields: [sanitarioId], references: [id])
+  cita        Cita      @relation(fields: [citaId], references: [id])
+
+  @@id([sanitarioId, citaId])
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+}
